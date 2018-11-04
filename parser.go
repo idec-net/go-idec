@@ -60,12 +60,14 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		body = strings.Join([]string{body, txtMessage[i]}, "\n")
 	}
 
-	pointMessage.Echo = txtMessage[0]
-	pointMessage.To = txtMessage[1]
-	pointMessage.Subg = txtMessage[2]
-	pointMessage.EmptyLine = txtMessage[3]
-	pointMessage.Repto = txtMessage[4]
-	pointMessage.Body = body
+	pointMessage = &PointMessage{
+		Echo:      txtMessage[0],
+		To:        txtMessage[1],
+		Subg:      txtMessage[2],
+		EmptyLine: txtMessage[3],
+		Repto:     txtMessage[4],
+		Body:      body,
+	}
 
 	return pointMessage, nil
 }
