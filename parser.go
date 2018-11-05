@@ -64,7 +64,7 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 	}
 
 	pointMessage = &PointMessage{
-		Echo:      txtMessage[0],
+		Echo:      strings.Trim(txtMessage[0], " "),
 		To:        txtMessage[1],
 		Subg:      txtMessage[2],
 		EmptyLine: txtMessage[3],
@@ -144,7 +144,7 @@ func MakeMsgID(msg string) string {
 	id := base64.StdEncoding.EncodeToString(sum[:])
 	id = strings.Replace(id, "+", "A", -1)
 	id = strings.Replace(id, "/", "Z", -1)
-	return id[:20]
+	return id[:19]
 }
 
 // String from PointMessage
