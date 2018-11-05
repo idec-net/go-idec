@@ -1,10 +1,13 @@
 package idec
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // ParseMessage ...
@@ -72,6 +75,32 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 	return pointMessage, nil
 }
 
+// MakeBundledMessage from point message.
+// Returns Message with empty From and Address fields
+// you must set this somewhere outside
+func MakeBundledMessage(pointMessage *PointMessage) (Message, error) {
+	var msg Message
+	t := "ii/ok"
+	if pointMessage.Repto != "" {
+		t = fmt.Sprintf("%s/repto/%s", t, pointMessage.Repto)
+	}
+	tags, err := ParseTags(t)
+	if err != nil {
+		return msg, err
+	}
+	msg = Message{
+		Tags:      tags,
+		Echo:      pointMessage.Echo,
+		Timestamp: int(time.Now().Unix()),
+		To:        pointMessage.To,
+		Subg:      pointMessage.Subg,
+		Repto:     pointMessage.Repto,
+		Body:      pointMessage.Body,
+	}
+
+	return msg, nil
+}
+
 // parseTags parse message tags and return Tags struct
 func ParseTags(tags string) (Tags, error) {
 	var t Tags
@@ -107,4 +136,27 @@ func ParseEchoList(list string) ([]Echo, error) {
 	}
 
 	return echoes, nil
+}
+
+// MakeMsgID from provided plain bundled message
+func MakeMsgID(msg string) string {
+	id := string(
+		sha256.New().Sum(
+			[]byte(base64.StdEncoding.EncodeToString(
+				[]byte(msg)))))[:20] // LISP style, LOL
+	id = strings.Replace(id, "+", "A", -1)
+	id = strings.Replace(id, "/", "Z", -1)
+	return id
+}
+
+// String from PointMessage
+func (p *PointMessage) String() string {
+	return strings.Join([]string{
+		p.Echo,
+		p.To,
+		p.Subg,
+		"",
+		p.Repto,
+		p.Body,
+	}, "\n")
 }
