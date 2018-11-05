@@ -140,13 +140,11 @@ func ParseEchoList(list string) ([]Echo, error) {
 
 // MakeMsgID from provided plain bundled message
 func MakeMsgID(msg string) string {
-	id := string(
-		sha256.New().Sum(
-			[]byte(base64.StdEncoding.EncodeToString(
-				[]byte(msg)))))[:20] // LISP style, LOL
+	sum := sha256.Sum256([]byte(msg))
+	id := base64.StdEncoding.EncodeToString(sum[:])
 	id = strings.Replace(id, "+", "A", -1)
 	id = strings.Replace(id, "/", "Z", -1)
-	return id
+	return id[:20]
 }
 
 // String from PointMessage
