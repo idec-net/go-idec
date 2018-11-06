@@ -189,7 +189,7 @@ func MakeMsgID(msg string) string {
 	id := base64.StdEncoding.EncodeToString(sum[:])
 	id = strings.Replace(id, "+", "A", -1)
 	id = strings.Replace(id, "/", "Z", -1)
-	return id[:19]
+	return id[:20]
 }
 
 // String from PointMessage
