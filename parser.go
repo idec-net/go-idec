@@ -79,7 +79,8 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		Body:      body,
 	}
 	if !strings.Contains(txtMessage[4], "@repto") {
-		pointMessage.Body = txtMessage[4] + "\n" + pointMessage.Body
+		pointMessage.Body = "\n" + txtMessage[4] + "\n" + pointMessage.Body
+		pointMessage.Repto = ""
 	} else {
 		pointMessage.Repto = ParseReptoField(txtMessage[4])
 	}
@@ -95,6 +96,9 @@ func (p *PointMessage) Validate() error {
 	if p.Echo == "" {
 		err = errors.New("`Echo' field is empty")
 	}
+	if !strings.Contains(p.Echo, ".") {
+		err = errors.New("Wrong Echo name")
+	}
 	if p.To == "" {
 		err = errors.New("`To' field is empty")
 	}
@@ -103,9 +107,6 @@ func (p *PointMessage) Validate() error {
 	}
 	if p.EmptyLine != "" {
 		err = errors.New("EmptyLine is not empty")
-	}
-	if p.Repto != "" && len(p.Repto) != 19 {
-		err = errors.New("`Repto' field not empty and does not matching with message ID pattern")
 	}
 	if p.Body == "" {
 		err = errors.New("`Body' field is empty")
