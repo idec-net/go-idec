@@ -72,11 +72,17 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		To:        txtMessage[1],
 		Subg:      txtMessage[2],
 		EmptyLine: txtMessage[3],
-		Repto:     txtMessage[4],
+		Repto:     ParseReptoField(txtMessage[4]),
 		Body:      body,
 	}
 
 	return pointMessage, nil
+}
+
+// ParseReptoField @repto:MSGID, drops @repto prefix
+// and return raw MSGID
+func ParseReptoField(repto string) string {
+	return strings.Trim(repto, "@repto:")
 }
 
 // MakeBundledMessage from point message.
