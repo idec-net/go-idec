@@ -76,8 +76,12 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		To:        txtMessage[1],
 		Subg:      txtMessage[2],
 		EmptyLine: txtMessage[3],
-		Repto:     ParseReptoField(txtMessage[4]),
 		Body:      body,
+	}
+	if !strings.Contains(txtMessage[4], "@repto") {
+		pointMessage.Body = txtMessage[4] + "\n" + pointMessage.Body
+	} else {
+		pointMessage.Repto = ParseReptoField(txtMessage[4])
 	}
 
 	return pointMessage, nil
@@ -85,6 +89,7 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 
 // Validate point message
 // Returns error if one of the message fields is invalid
+// Also, attach repto into body is it does not
 func (p *PointMessage) Validate() error {
 	var err error
 	if p.Echo == "" {
