@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ngaut/log"
 )
 
 // ParseMessage ...
@@ -47,7 +49,9 @@ func ParseMessage(message string) (Message, error) {
 // ParsePointMessage ...
 func ParsePointMessage(message string) (*PointMessage, error) {
 	var pointMessage *PointMessage
-	plainMessage, err := base64.StdEncoding.DecodeString(message)
+	plainMessage, err := base64.URLEncoding.DecodeString(message)
+
+	log.Debug("Decoded point message is: ", string(plainMessage))
 	if err != nil {
 		return pointMessage, err
 	}
