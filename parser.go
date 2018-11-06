@@ -3,13 +3,14 @@ package idec
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/ngaut/log"
+	"net/url"
+
+	"errors"
 )
 
 // ParseMessage ...
@@ -49,9 +50,12 @@ func ParseMessage(message string) (Message, error) {
 // ParsePointMessage ...
 func ParsePointMessage(message string) (*PointMessage, error) {
 	var pointMessage *PointMessage
-	plainMessage, err := base64.URLEncoding.DecodeString(message)
-
-	log.Debug("Decoded point message is: ", string(plainMessage))
+	// Unescape message
+	unsafe, err := url.QueryUnescape(message)
+	if err != nil {
+		return pointMessage, err
+	}
+	plainMessage, err := base64.StdEncoding.DecodeString(unsafe)
 	if err != nil {
 		return pointMessage, err
 	}
@@ -77,6 +81,31 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 	}
 
 	return pointMessage, nil
+}
+
+// Validate point message
+// Returns error if one of the message fields is invalid
+func (p *PointMessage) Validate() error {
+	var err error
+	if p.Echo == "" {
+		err = errors.New("`Echo' field is empty")
+	}
+	if p.To == "" {
+		err = errors.New("`To' field is empty")
+	}
+	if p.Subg == "" {
+		err = errors.New("`Subg' field is empty")
+	}
+	if p.EmptyLine != "" {
+		err = errors.New("EmptyLine is not empty")
+	}
+	if p.Repto != "" && len(p.Repto) != 19 {
+		err = errors.New("`Repto' field not empty and does not matching with message ID pattern")
+	}
+	if p.Body == "" {
+		err = errors.New("`Body' field is empty")
+	}
+	return err
 }
 
 // ParseReptoField @repto:MSGID, drops @repto prefix
