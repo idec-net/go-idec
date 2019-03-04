@@ -78,7 +78,7 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		EmptyLine: txtMessage[3],
 		Body:      body,
 	}
-	if !strings.Contains(txtMessage[4], "@repto") {
+	if !strings.Contains(txtMessage[4], "@repto:") {
 		pointMessage.Body = "\n" + txtMessage[4] + "\n" + pointMessage.Body
 		pointMessage.Repto = ""
 	} else {
@@ -111,13 +111,17 @@ func (p *PointMessage) Validate() error {
 	if p.Body == "" {
 		err = errors.New("`Body' field is empty")
 	}
+	if p.Repto != "" && len(p.Repto) != 20 {
+		err = errors.New("Wrong @repto field length")
+	}
 	return err
 }
 
 // ParseReptoField @repto:MSGID, drops @repto prefix
 // and return raw MSGID
 func ParseReptoField(repto string) string {
-	return strings.Trim(repto, "@repto:")
+	r := strings.Trim(strings.Split(repto, "@repto:")[1], " ")
+	return r
 }
 
 // MakeBundledMessage from point message.
