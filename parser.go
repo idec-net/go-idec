@@ -79,7 +79,7 @@ func ParsePointMessage(message string) (*PointMessage, error) {
 		Body:      body,
 	}
 	if !strings.Contains(txtMessage[4], "@repto:") {
-		pointMessage.Body = "\n" + txtMessage[4] + "\n" + pointMessage.Body
+		pointMessage.Body = txtMessage[4] + "\n" + pointMessage.Body
 		pointMessage.Repto = ""
 	} else {
 		pointMessage.Repto = ParseReptoField(txtMessage[4])
@@ -203,7 +203,7 @@ func (p *PointMessage) String() string {
 		p.To,
 		p.Subg,
 		"",
-		p.Repto,
+		"@repto:" + p.Repto,
 		p.Body,
 	}, "\n")
 }

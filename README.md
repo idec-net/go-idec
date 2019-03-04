@@ -1,5 +1,8 @@
 # go-idec
 
+[![Build Status](https://travis-ci.org/idec-net/go-idec.svg?branch=master)](https://travis-ci.org/idec-net/go-idec) [![codecov](https://codecov.io/gh/idec-net/go-idec/branch/master/graph/badge.svg)](https://codecov.io/gh/idec-net/go-idec)
+
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 

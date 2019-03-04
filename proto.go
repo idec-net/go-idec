@@ -200,7 +200,7 @@ func (f FetchConfig) GetEchoList() ([]Echo, error) {
 	var echoes []Echo
 
 	// Check node features support
-	fres, err := http.Get(strings.Join([]string{f.Node, features}, "/"))
+	fres, err := http.Get(strings.Join([]string{strings.TrimRight(f.Node, "/"), features}, "/"))
 	if err != nil {
 		return echoes, err
 	}
@@ -216,7 +216,7 @@ func (f FetchConfig) GetEchoList() ([]Echo, error) {
 		return echoes, err
 	}
 
-	lres, err := http.Get(strings.Join([]string{f.Node, listTXT}, "/"))
+	lres, err := http.Get(strings.Join([]string{strings.TrimRight(f.Node, "/"), listTXT}, "/"))
 	if err != nil {
 		return echoes, err
 	}
