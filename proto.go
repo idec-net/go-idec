@@ -4,6 +4,7 @@ package idec
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -230,4 +231,31 @@ func (f FetchConfig) GetEchoList() ([]Echo, error) {
 	echoes, err = ParseEchoList(string(l))
 
 	return echoes, err
+}
+
+// PostMessage sends prepared base64 point message to the node
+func (f FetchConfig) PostMessage(authstring, message string) error {
+	url := strings.TrimRight(f.Node, "/") + "/u/point"
+
+	data := fmt.Sprintf("pauth=%s&tmsg=%s", authstring, message)
+	req, err := http.NewRequest("POST", url, strings.NewReader(data))
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if !strings.Contains(string(body), "msg ok") {
+		return fmt.Errorf("Error from node: %s", string(body))
+	}
+	return nil
 }

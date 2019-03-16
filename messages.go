@@ -3,6 +3,7 @@ package idec
 import (
 	"encoding/base64"
 	"errors"
+	"net/url"
 	"strings"
 )
 
@@ -93,5 +94,5 @@ func (p *PointMessage) PrepareMessageForSend() string {
 
 	result = base64.StdEncoding.EncodeToString([]byte(rawMessage))
 
-	return result
+	return url.QueryEscape(result)
 }

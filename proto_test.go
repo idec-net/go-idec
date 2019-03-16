@@ -130,3 +130,33 @@ x/c`)
 		t.Error(err)
 	}
 }
+
+func TestPostMessage(t *testing.T) {
+	httpmock.Activate()
+	fc := FetchConfig{
+		Node:   "http://localhost/idec/",
+		Echoes: []string{"ii.test.14"},
+	}
+
+	message := "aWkvb2svcmVwdG8veEYza2ttclpZbGQzMzBCTzdxYUEKaWkudGVzdC4xNAoxNTUxNjk5NTk1CkRpZnJleApkeW5hbWljLDEKRGlmcmV4ClJlOiBpZGVjCgpKS0hKS0hLSlNGSCBscwo9PT0gZHMKc2RmZyBzZGZnCmdmc2QgZGZnc2dmIGYKPT09PQpzaCAtYyAnZWNobyBPSycKPT09PQ=="
+
+	httpmock.RegisterResponder("POST", "http://localhost/idec/u/point", func(req *http.Request) (*http.Response, error) {
+		resp := httpmock.NewStringResponse(200, `msg ok`)
+		return resp, nil
+	})
+
+	err := fc.PostMessage("auth", message)
+	if err != nil {
+		t.Error(err)
+	}
+
+	httpmock.RegisterResponder("POST", "http://localhost/idec/u/point", func(req *http.Request) (*http.Response, error) {
+		resp := httpmock.NewStringResponse(403, `error: wrong authstring`)
+		return resp, nil
+	})
+
+	err = fc.PostMessage("auth", message)
+	if err == nil {
+		t.Error("Errors not precessed")
+	}
+}
